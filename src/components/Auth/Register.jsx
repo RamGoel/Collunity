@@ -32,7 +32,7 @@ const Register = () => {
     e.preventDefault();
     console.log(data);
     setData({ ...data, error: null, loading: true });
-    if (!data.name || !data.email || !data.password) {
+    if (!data.name || !data.email || !data.password || !data.college) {
       setData({ ...data, error: "All fields are required!" });
       return;
     }
