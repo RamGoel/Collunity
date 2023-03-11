@@ -15,13 +15,15 @@ var storage;
 try {
   app = getApp();
 } catch (error) {
+
   const firebaseConfig = {
-    apiKey: "AIzaSyBzKuzjKriUidssayDTBTnOzhYhI6EgmbY",
-    authDomain: "web-chat-app-2-f13ae.firebaseapp.com",
-    projectId: "web-chat-app-2-f13ae",
-    storageBucket: "web-chat-app-2-f13ae.appspot.com",
-    messagingSenderId: "229937947974",
-    appId: "1:229937947974:web:0ed237852f9333d6977147"
+    apiKey: "AIzaSyCTRGcxm0ZmUVTRMFdA72qYTKTr6SLbMaA",
+    authDomain: "kalakriti-e95b0.firebaseapp.com",
+    projectId: "kalakriti-e95b0",
+    storageBucket: "kalakriti-e95b0.appspot.com",
+    messagingSenderId: "1033465116600",
+    appId: "1:1033465116600:web:d90833e9b3409b77c8414d",
+    measurementId: "G-EHGMJC9TCG"
   };
   app = initializeApp(firebaseConfig);
 }
@@ -33,3 +35,6 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 
 export { auth, db, storage };
+
+
+

@@ -11,14 +11,8 @@ import SelectedUser from "./SelectedUser";
 import UserCard from "./UserCard";
 
 export default function Dashboard() {
-  const isVisible = usePageVisibility();
-
   const { user } = useContext(AuthContext);
-
   const history = useHistory();
-
-  const location = useLocation();
-
   const handleSignOut = async () => {
     await updateDoc(doc(db, "users", user.uid), {
       isOnline: false
@@ -27,12 +21,13 @@ export default function Dashboard() {
     history.push("/");
   };
 
-  const [users, setUsers] = useState([]);
-  const [myuser, setMyUser] = useState([]);
-
+  const [users, setUsers] = useState(null);
+  const [myuser, setMyUser] = useState(null);
+  const [isLoaded,setLoaded]=useState(false)
   const [showChat, setShowChat]=useState(false);
-  const [chatData, setChatData]=useState([])
+  const [chatData, setChatData]=useState(null)
   useEffect(() => {
+    setLoaded(false)
     const usersRef = collection(db, "users");
 
     // create query object
@@ -48,6 +43,8 @@ export default function Dashboard() {
       });
       setMyUser(users.find((e) => e.uid === auth.currentUser.uid));
       setUsers(users.filter((e) => e.uid != auth.currentUser.uid));
+
+      setLoaded(true)
     });
     return () => unsub();
   }, []);
@@ -55,22 +52,27 @@ export default function Dashboard() {
   console.log(myuser);
 
   return (
-    <div style={{backgroundColor:'#1F51FF', margin:'13px', padding:'20px', borderRadius:'10px'}}>
+   (isLoaded)?<div style={{backgroundColor:'#1F51FF', margin:'13px', padding:'20px', borderRadius:'10px'}}>
       <main className="d-flex">
         <div className="content" style={{ width:'20vw' }}>
-          <div style={{
+          <div className="d-flex" style={{
             marginBottom:'5px',
             background:'black',
             borderRadius:'10px',
-            padding:'7px'
+            padding:'7px',
+            color:'white',
+            justifyContent:'flex-start'
           }}>
             <button onClick={handleSignOut} style={{
               background:'transparent',
-              cursor:'pointer'
+              cursor:'pointer',
+              border:'none'
             }}>
 
            <i className="fa fa-sign-out" style={{color:'white'}}></i>
             </button>
+
+            <p style={{color:'white'}}>{`${myuser.name}@${(myuser.college)?myuser.college.substring(0,12):""}...`}</p>
           </div>
 
           <div className="new">
@@ -84,7 +86,7 @@ export default function Dashboard() {
               }}
               className="container"
             >
-              {users.length?users.map((user) => {
+              {(users!=null)?users.map((user) => {
                 return (
                   <div
                     onClick={()=>{
@@ -110,6 +112,8 @@ export default function Dashboard() {
           {showChat?<SelectedUser user2state={chatData} />:null}
         </div>
       </main>
+    </div>:<div className="d-flex" style={{height:'100vh'}}>
+      <i className="fa fa-spinner fa-2x fa-spin"></i>
     </div>
   );
 }

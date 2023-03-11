@@ -2,21 +2,30 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth, db } from "../../configs/firebase";
-import { setDoc, doc, Timestamp } from "firebase/firestore";
+import { setDoc, doc, Timestamp, onSnapshot, collection, query, orderBy, addDoc } from "firebase/firestore";
 import { useHistory } from "react-router-dom";
-import { TextField, Button, InputAdornment } from "@mui/material";
+import { TextField, Button, InputAdornment, Autocomplete} from "@mui/material";
+import { useEffect } from "react";
+
 const Register = () => {
   const history = useHistory();
+  const [collegeList, setCollegeList] = useState(null)
   const [data, setData] = useState({
     name: "",
     email: "",
     password: "",
+    college: "",
     error: null,
     loading: false
   });
-  const { name, email, password, error, loading } = data;
-  const handleChange = (e) => {
-    setData({ ...data, [e.target.name]: e.target.value });
+  const { name, email, password, college, error, loading } = data;
+  const handleChange = (e, val) => {
+    if(val!=null){
+      setData({ ...data, college: val });
+    }else{
+
+      setData({ ...data, [e.target.name]: e.target.value });
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -34,10 +43,17 @@ const Register = () => {
         password
       );
       console.log(result.user);
+      if(!collegeList.includes(college)){
+        await addDoc(collection(db,"colleges"),{
+          label:college,
+          id:collegeList[collegeList.length-1].id
+        })
+      }
       await setDoc(doc(db, "users", result.user.uid), {
         uid: result.user.uid,
         name,
         email,
+        college,
         createdAt: Timestamp.fromDate(new Date()),
         isOnline: true
       });
@@ -45,6 +61,7 @@ const Register = () => {
         name: "",
         email: "",
         password: "",
+        college: "",
         error: null,
         loading: false
       });
@@ -56,165 +73,26 @@ const Register = () => {
   };
 
 
+  useEffect(() => {
+    const clgRef = collection(db, "colleges");
+    const _q = query(clgRef, orderBy("label", "asc"));
+    let unsub = onSnapshot(_q, (querySnapshot) => {
+      let ls = [];
+      querySnapshot.forEach((doc) => {
+        ls.push(doc.data());
+      });
+      setCollegeList(ls);
+    });
+    return () => unsub();
+  }, []);
+
+
   return (
-    // <div>
-    //   <header class="myHeader">
-    //     <span>
-    //       <svg
-    //         xmlns="http://www.w3.org/2000/svg"
-    //         class="h-5 w-5"
-    //         viewBox="0 0 20 20"
-    //         fill="currentColor"
-    //         style={{
-    //           width: "50px",
-    //           height: "50px",
-    //           position: "absolute",
-    //           float: "left"
-    //         }}
-    //       >
-    //         <path d="M2 5a2 2 0 012-2h7a2 2 0 012 2v4a2 2 0 01-2 2H9l-3 3v-3H4a2 2 0 01-2-2V5z" />
-    //         <path d="M15 7v2a4 4 0 01-4 4H9.828l-1.766 1.767c.28.149.599.233.938.233h2l3 3v-3h2a2 2 0 002-2V9a2 2 0 00-2-2h-1z" />
-    //       </svg>
-    //     </span>
-    //     <h1
-    //       style={{
-    //         textAlign: "center",
-    //         marginLeft: "50px",
-    //         marginTop: "15px",
-    //         fontSize: "35px"
-    //       }}
-    //     >
-    //       Web Chat Pingo!
-    //     </h1>
-    //   </header>
 
-    //   <main>
-    //     <div className="content">
-    //       <h2
-    //         style={{
-    //           textAlign: "center",
-    //           fontSize: "35px",
-    //           color: "#502A75",
-    //           marginTop: "10px"
-    //         }}
-    //       >
-    //         Register
-    //       </h2>
-    //       <div class="formClass">
-    //         <form onSubmit={handleSubmit}>
-    //           <div class="form-group">
-    //             <span>
-    //               {" "}
-    //               <svg
-    //                 style={{
-    //                   width: "25px",
-    //                   height: "30px",
-    //                   top: "10px",
-    //                   position: "relative"
-    //                 }}
-    //                 xmlns="http://www.w3.org/2000/svg"
-    //                 class="h-5 w-5"
-    //                 viewBox="0 0 20 20"
-    //                 fill="currentColor"
-    //               >
-    //                 <path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" />
-    //                 <path
-    //                   fill-rule="evenodd"
-    //                   d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"
-    //                   clip-rule="evenodd"
-    //                 />
-    //               </svg>
-    //             </span>
-    //             <input
-    //               type="text"
-    //               name="name"
-    //               placeholder="Full Name"
-    //               value={name}
-    //               onChange={handleChange}
-    //             />
-    //           </div>
-    //           <div class="form-group">
-    //             <span>
-    //               <svg
-    //                 style={{
-    //                   width: "25px",
-    //                   height: "30px",
-    //                   top: "10px",
-    //                   position: "relative"
-    //                 }}
-    //                 xmlns="http://www.w3.org/2000/svg"
-    //                 class="h-5 w-5"
-    //                 viewBox="0 0 20 20"
-    //                 fill="currentColor"
-    //               >
-    //                 <path
-    //                   fill-rule="evenodd"
-    //                   d="M14.243 5.757a6 6 0 10-.986 9.284 1 1 0 111.087 1.678A8 8 0 1118 10a3 3 0 01-4.8 2.401A4 4 0 1114 10a1 1 0 102 0c0-1.537-.586-3.07-1.757-4.243zM12 10a2 2 0 10-4 0 2 2 0 004 0z"
-    //                   clip-rule="evenodd"
-    //                 />
-    //               </svg>
-    //             </span>
-    //             <input
-    //               type="email"
-    //               name="email"
-    //               placeholder="Email"
-    //               value={email}
-    //               onChange={handleChange}
-    //             />
-    //           </div>
-    //           <div class="form-group">
-    //             <span>
-    //               <svg
-    //                 style={{
-    //                   width: "25px",
-    //                   height: "30px",
-    //                   top: "10px",
-    //                   position: "relative"
-    //                 }}
-    //                 xmlns="http://www.w3.org/2000/svg"
-    //                 class="h-5 w-5"
-    //                 viewBox="0 0 20 20"
-    //                 fill="currentColor"
-    //               >
-    //                 <path
-    //                   fill-rule="evenodd"
-    //                   d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"
-    //                   clip-rule="evenodd"
-    //                 />
-    //               </svg>
-    //             </span>
-    //             <input
-    //               type="password"
-    //               name="password"
-    //               placeholder="Password"
-    //               value={password}
-    //               onChange={handleChange}
-    //             />
-    //           </div>
+    <div className="d-flex" style={{ height: '100vh' }}>
 
-    //           <button className="btn" name="button">
-    //             Submit
-    //           </button>
-
-    //           <div style={{ color: "blue" }}>
-    //             {loading ? "Please Wait..." : ""}
-    //           </div>
-
-    //           <div style={{ color: "red" }}>{data.error ? data.error : ""}</div>
-    //           <div>
-    //             <h5 style={{ fontSize: "medium" }}>Already have an account?</h5>
-    //             <Link to="/">Login Here</Link>
-    //           </div>
-    //         </form>
-    //       </div>
-    //     </div>
-    //   </main>
-    // </div>
-
-    <div className="d-flex" style={{height:'100vh'}}>
-
-      <div className="d-flex" style={{width:'70vw'}}>
-        <div className="content" style={{width:'45%'}}>
+      <div className="d-flex" style={{ width: '70vw' }}>
+        <div className="content" style={{ width: '45%' }}>
           <h2
             style={{
               textAlign: "center",
@@ -228,94 +106,107 @@ const Register = () => {
 
           <div class="formClass">
             <form onSubmit={handleSubmit}>
-              <div class="form-group" style={{margin:'15px 0px'}}>
+              <div class="form-group" style={{ margin: '15px 0px' }}>
 
                 <TextField
-                 id="outlined-basic" 
-                 label="Full Name" 
-                 InputProps={{
-                  startAdornment: <InputAdornment position="start">
-                    <i className="fa fa-user"></i>
-                  </InputAdornment>,
+                  id="outlined-basic"
+                  label="Full Name"
+                  InputProps={{
+                    startAdornment: <InputAdornment position="start">
+                      <i className="fa fa-user"></i>
+                    </InputAdornment>,
                   }}
-                 style={{
-                  width:'100%'
-                 }}
-                 variant="outlined"
-                 value={name}
-                 type="text"
-                 name="name"
-                 onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                  handleChange(event);
-                }}
-                 required={true} />
+                  style={{
+                    width: '100%'
+                  }}
+                  variant="outlined"
+                  value={name}
+                  type="text"
+                  name="name"
+                  onChange={(event) => {
+                    handleChange(event);
+                  }}
+                  required={true} />
               </div>
 
-              <div class="form-group" style={{margin:'15px 0px'}}>
+              <div class="form-group" style={{ margin: '15px 0px' }}>
 
                 <TextField
-                 id="outlined-basic" 
-                 label="Email" 
-                 InputProps={{
-                  startAdornment: <InputAdornment position="start">
-                    <i className="fa fa-envelope"></i>
-                  </InputAdornment>,
+                  id="outlined-basic"
+                  label="Email"
+                  InputProps={{
+                    startAdornment: <InputAdornment position="start">
+                      <i className="fa fa-envelope"></i>
+                    </InputAdornment>,
                   }}
-                 style={{
-                  width:'100%'
-                 }}
-                 variant="outlined"
-                 value={email}
-                 type="email"
-                 name="email"
-                 onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                  handleChange(event);
-                }}
-                 required={true} />
+                  style={{
+                    width: '100%'
+                  }}
+                  variant="outlined"
+                  value={email}
+                  type="email"
+                  name="email"
+                  onChange={(event) => {
+                    handleChange(event);
+                  }}
+                  required={true} />
               </div>
 
-              <div class="form-group" style={{margin:'15px 0px'}}>
-                 <TextField
-                 id="outlined-basic" 
-                 InputProps={{
-                  startAdornment: <InputAdornment position="start">
-                    <i className="fa fa-lock"></i>
-                  </InputAdornment>,
+              <div class="form-group" style={{ margin: '15px 0px' }}>
+                <TextField
+                  id="outlined-basic"
+                  InputProps={{
+                    startAdornment: <InputAdornment position="start">
+                      <i className="fa fa-lock"></i>
+                    </InputAdornment>,
                   }}
-                 style={{
-                  width:'100%'
-                 }}
-                 label="Password" 
-                 variant="outlined"
-                 name="password"
-                 value={password}
-                 type={'password'}
-                 onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                  handleChange(event);
-                }}
-                 required={true} />
+                  style={{
+                    width: '100%'
+                  }}
+                  label="Password"
+                  variant="outlined"
+                  name="password"
+                  value={password}
+                  type={'password'}
+                  onChange={(event) => {
+                    handleChange(event);
+                  }}
+                  required={true} />
+              </div>
+
+              <div class="form-group" style={{ margin: '15px 0px' }}>
+                <Autocomplete
+                  disablePortal
+                  id="combo-box-demo"
+                  options={collegeList}
+                  freeSolo={true}
+                  inputValue={college}
+                  onInputChange={(e,val)=>handleChange(e, val)}
+                  renderInput={(params) => <TextField {...params} label="College" />}
+                />
+                
               </div>
 
               <Button type="submit" variant="contained" style={{
-                width:'100%'
+                width: '100%'
               }}>{loading ? <i className="fa fa-spinner fa-spin"></i> : "submit"}</Button>
-            
-              <div style={{ color: "red", margin:'5px auto' }}>{error ? error : ""}</div>
-              <div style={{margin:'10px auto',textAlign:'center'}}>
-                <h5 style={{ fontSize: "medium", marginTop:'10px', marginBottom:'5px' }}>Already have an Account?</h5>
+
+              <div style={{ color: "red", margin: '5px auto' }}>{error ? error : ""}</div>
+              <div style={{ margin: '10px auto', textAlign: 'center' }}>
+                <h5 style={{ fontSize: "medium", marginTop: '10px', marginBottom: '5px' }}>Already have an Account?</h5>
                 <Link to="/">Login Here</Link>
               </div>
-      
+
             </form>
           </div>
 
 
         </div>
 
-        <div className="d-flex" style={{width:'50%'}}>
+        <div className="d-flex" style={{ width: '50%' }}>
           <img style={{
-            borderRadius:'20px',
-            width:'100%'
+            borderRadius: '20px',
+            width: '100%'
           }} src="https://media.istockphoto.com/id/173598452/photo/university-in-autumn.jpg?s=612x612&w=0&k=20&c=jQqpZuTZ6qXIfWqnCW5nqlExJZO0PO47L-ZiaE8jIk0=" alt="" />
         </div>
       </div>

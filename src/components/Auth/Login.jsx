@@ -75,7 +75,7 @@ const Login = () => {
                  value={email}
                  type="email"
                  name="email"
-                 onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                 onChange={(event) => {
                   handleChange(event);
                 }}
                  required={true} />
@@ -97,7 +97,7 @@ const Login = () => {
                  name="password"
                  value={password}
                  type={'password'}
-                 onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                 onChange={(event) => {
                   handleChange(event);
                 }}
                  required={true} />
@@ -112,11 +112,6 @@ const Login = () => {
                 <h5 style={{ fontSize: "medium", marginTop:'10px', marginBottom:'5px' }}>Don't have an Account?</h5>
                 <Link to="/register">Register Here</Link>
               </div>
-              {/* <Button className="" variant="" style={{
-                width:'90%',
-              }}>
-              <img style={{width:'100%'}} src={image} alt="" />
-              </Button> */}
             </form>
           </div>
 

@@ -46,7 +46,7 @@ export default function SelectedUser({user2state}) {
   const id =
     user1id > user2uid ? `${user1id + user2uid}` : `${user2uid + user1id}`;
   const addDocMsg = async (url) => {
-    await addDoc(collection(db, "messages", id, "chat"), {
+    await addDoc(collection(db, "chattiges", id, "chat"), {
       text,
       from: user1id,
       to: user2uid,
@@ -91,7 +91,7 @@ export default function SelectedUser({user2state}) {
   };
 
   useEffect(() => {
-    const msgRef = collection(db, "messages", id, "chat");
+    const msgRef = collection(db, "chattiges", id, "chat");
     const _q = query(msgRef, orderBy("createdAt", "asc"));
     onSnapshot(_q, (querySnapshot) => {
       let msgs = [];
@@ -104,7 +104,9 @@ export default function SelectedUser({user2state}) {
       setData(doc.data());
     });
     return () => unsub();
-  }, []);
+  }, [user2state]);
+
+
   useEffect(() => {
     console.log("file uploaded");
   }, [setImg]);
