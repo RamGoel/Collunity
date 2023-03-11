@@ -9,23 +9,23 @@ export default function Messages({ msg, user1id, user2 }) {
   }, [msg]);
 
   return (
-    <div ref={scrollRef}>
-      <p>
-        {msg.from === user1id ? (
-          <span style={{ color: "blue", fontWeight: "bold" }}>You: </span>
-        ) : (
-          <span style={{ color: "red", fontWeight: "bold" }}>
-            {user2.name}:{" "}
-          </span>
-        )}
-        {msg.text ? msg.text : ""}
+    <div>
 
-        <br />
+    <div ref={scrollRef} style={{
+      background:'#1F51FF',
+      margin:'10px 0px', 
+      width:'fit-content',
+      padding:'10px 15px', 
+      borderRadius:'20px',
+      marginLeft:(msg.from==user1id)?'auto':'',
+    }}>
+      <p style={{margin:0, padding:0, color:'white'}}>
+        {msg.text ? msg.text : ""}
       </p>
       {msg.media ? (
-        <img src={msg.media} style={{ width: "200px", height: "200px" }} />
+        <img src={msg.media} style={{height: "200px", borderRadius:'15px' }} />
       ) : null}
-      <br />
+    </div>
     </div>
   );
 }

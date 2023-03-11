@@ -26,13 +26,14 @@ import {
 } from "firebase/storage";
 import Messages from "./Messages";
 import { usePageVisibility } from "react-page-visibility";
+import UserCard from "./UserCard";
 
-export default function SelectedUser() {
+export default function SelectedUser({user2state}) {
   const { user } = useContext(AuthContext);
   const user1id = user.uid;
   console.log(user1id);
-  let location = useLocation();
-  const user2 = location.state;
+  // let location = useLocation();
+  const user2 = user2state;
   var isVisible = usePageVisibility();
 
   const [text, setText] = useState("");
@@ -68,6 +69,10 @@ export default function SelectedUser() {
     e.preventDefault();
 
     let url;
+    if(!img && text==''){
+      alert("Please type a message")
+      return;
+    }
     if (img) {
       setUploading(true);
       const imgRef = ref(
@@ -114,78 +119,13 @@ export default function SelectedUser() {
   console.log(data);
   return (
     <div>
-      <header class="myHeader">
-        <span>
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            class="h-5 w-5"
-            viewBox="0 0 20 20"
-            fill="currentColor"
-            style={{
-              width: "50px",
-              height: "50px",
-              position: "absolute",
-              float: "left"
-            }}
-          >
-            <path d="M2 5a2 2 0 012-2h7a2 2 0 012 2v4a2 2 0 01-2 2H9l-3 3v-3H4a2 2 0 01-2-2V5z" />
-            <path d="M15 7v2a4 4 0 01-4 4H9.828l-1.766 1.767c.28.149.599.233.938.233h2l3 3v-3h2a2 2 0 002-2V9a2 2 0 00-2-2h-1z" />
-          </svg>
-        </span>
-        <h1
-          style={{
-            textAlign: "center",
-            marginLeft: "50px",
-            marginTop: "15px",
-            fontSize: "35px"
-          }}
-        >
-          Web Chat Pingo!
-        </h1>
-      </header>
       <main>
         <div className="content">
-          <Link to="/dashboard">
-            <svg
-              style={{
-                width: "30px",
-                height: "30px",
-                float: "left",
-                cursor: "pointer",
-                color: "#502A75"
-              }}
-              xmlns="http://www.w3.org/2000/svg"
-              class="h-5 w-5"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-            >
-              <path
-                fill-rule="evenodd"
-                d="M10 18a8 8 0 100-16 8 8 0 000 16zm.707-10.293a1 1 0 00-1.414-1.414l-3 3a1 1 0 000 1.414l3 3a1 1 0 001.414-1.414L9.414 11H13a1 1 0 100-2H9.414l1.293-1.293z"
-                clip-rule="evenodd"
-              />
-            </svg>
-          </Link>
-          <div style={{ textAlign: "center", marginBottom:'15px' }}>
-            <h2
-              style={{
-                marginTop: "10px"
-              }}
-            >
-              {user2.name}{" "}
-              {user2.isOnline ? (
-                <span style={{ color: "green" }}>•</span>
-              ) : (
-                <span style={{ color: "red" }}>•</span>
-              )}
-            </h2>
-            <small >{user2.email}</small>
-            
-          </div>
+          
 
           <div
             style={{
-              height: "400px",
+              height: "80vh",
               overflowY: "auto",
               backgroundColor: "#eaebff",
               padding: "7px",
@@ -195,6 +135,7 @@ export default function SelectedUser() {
             }}
             className="new"
           >
+            <UserCard user={user2} design2={true} />
             {msgs.length
               ? msgs.map((msg, i) => (
                   <Messages msg={msg} user1id={user1id} user2={user2} />
@@ -202,105 +143,14 @@ export default function SelectedUser() {
               : null}
           </div>
 
-          {/* <div
-            style={{
-              height: "50px",
-              padding: "7px",
-              marginLeft: "-8px",
-              marginRight: "-10px"
-            }}
-          >
-            <div
-              style={{
-                height: "100%",
-                width: "10%",
-                backgroundColor: "#eaebff",
-                marginLeft: "-10px",
-                marginRight: "1%",
-                float: "left"
-              }}
-            >
-              <label>
-                <svg
-                  style={{
-                    height: "35px",
-                    width: "35px",
-                    padding: "5px",
-                    cursor: "pointer"
-                  }}
-                  xmlns="http://www.w3.org/2000/svg"
-                  class="h-5 w-5"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                >
-                  <path
-                    fill-rule="evenodd"
-                    d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z"
-                    clip-rule="evenodd"
-                  />
-                </svg>
-                <input
-                  onChange={(e) => setImg(e.target.files[0])}
-                  type="file"
-                  id="img"
-                  accept="image/*"
-                  style={{ display: "none" }}
-                />
-              </label>
-            </div>
-            <div style={{ height: "100%", width: "75%", float: "left" }}>
-              <textarea
-                style={{
-                  padding: "5px",
-                  width: "100%",
 
-                  height: "40px",
-                  background: "#eaebff",
-                  overflow: "hidden",
-                  border: "none",
-                  resize: "none"
-                }}
-                type="text"
-                placeholder="Type your message... "
-                value={text}
-                onChange={(e) => setText(e.target.value)}
-              ></textarea>
-            </div>
-            <div
-              style={{
-                height: "100%",
-                width: "15%",
-                backgroundColor: "#eaebff",
-                marginLeft: "-7px",
-                float: "right"
-              }}
-            >
-              <svg
-                style={{
-                  height: "35px",
-                  width: "35px",
-                  padding: "5px",
-                  cursor: "pointer"
-                }}
-                xmlns="http://www.w3.org/2000/svg"
-                class="h-5 w-5"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-              >
-                <path
-                  fill-rule="evenodd"
-                  d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z"
-                  clip-rule="evenodd"
-                />
-              </svg>
-            </div>
-          </div> */}
-          <div style={{
-              
-              marginLeft: "-18px",
-              marginRight: "-18px"
-            }}>
-          <div className="messageBox">
+          <div className="messageBox d-flex" style={{
+            backgroundColor:'white',
+            margin:'10px auto',
+            width:'100%',
+            padding:'5px',
+            borderRadius:'10px'
+          }}>
             <input
               onChange={(e) => setImg(e.target.files[0])}
               type="file"
@@ -314,6 +164,10 @@ export default function SelectedUser() {
               className="button-s1"
               tooltip="Copy Link"
               flow="up"
+              style={{
+                background:'transparent',
+                border:'none'
+              }}
               onClick={() => {
                 document.getElementById("upimg").click();
               }}
@@ -323,58 +177,37 @@ export default function SelectedUser() {
               </span>
             </button>
 
-            <div className="textA">
-              <textarea
+              <input
                 id="message"
                 name="message"
-                rows={1}
-                cols={30}
                 placeholder="Type your message here"
                 defaultValue={""}
                 value={text}
+                style={{
+                  width:'100%',
+                  padding:'10px',
+                  background:'transparent',
+                  border:'none'
+                }}
                 onChange={(e) => setText(e.target.value)}
               />
-            </div>
             <button
               onClick={(e) => handleSubmit(e)}
               id="send"
               className="button-s1"
               tooltip="Send"
               flow="left"
+              style={{
+                background:'transparent',
+                border:'none'
+              }}
             >
               <span className="material-icons headerIcon">
                 <SendIcon />
               </span>
             </button>
           </div>
-          </div>
 
-          {/* <form style={{ display: "flex" }} onSubmit={handleSubmit}>
-            <div>
-              <label>
-                <FileUpload />
-                <input
-                  onChange={(e) => setImg(e.target.files[0])}
-                  type="file"
-                  id="img"
-                  accept="image/*"
-                  style={{ display: "none" }}
-                />
-              </label>
-            </div>
-            <div>
-              <input
-                style={{ padding: "5px" }}
-                type="text"
-                placeholder="Type your message... "
-                value={text}
-                onChange={(e) => setText(e.target.value)}
-              ></input>
-            </div>
-            <div>
-              <button style={{ padding: "5px" }}>Send</button>
-            </div>
-          </form> */}
           {img ? <p>{img.name}</p> : ""}
           {uploading ? "Please Wait.. File is uploading" : ""}
         </div>

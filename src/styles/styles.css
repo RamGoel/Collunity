@@ -3,11 +3,22 @@ h1, h2, h3, h4, h5, h6, p, a{
   font-family:'Golos Text';
   text-align: center;
 }
-
+body{
+  overflow: hidden;
+}
 
 i{
   font-size: 20px;
   margin-right: 10px;
+}
+
+div {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+div::-webkit-scrollbar {
+  display: none;
 }
 
 .d-flex{
@@ -19,4 +30,9 @@ i{
 
 button:hover{
   opacity: 0.7;
+}
+
+input:focus{
+  border: none;
+  outline: none;
 }
