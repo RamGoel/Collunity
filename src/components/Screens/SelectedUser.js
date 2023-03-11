@@ -1,19 +1,15 @@
-import { useRef, useState, useContext, useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
-import { auth, db, storage } from "../../configs/firebase";
-import FileUpload from "../utils/FileUpload";
+import {useState, useContext, useEffect } from "react";
+import { db, storage } from "../../configs/firebase";
 import { AuthContext } from "../../configs/auth";
 import SendIcon from "@mui/icons-material/Send";
 import UploadIcon from "@mui/icons-material/Upload";
 import {
   collection,
   query,
-  where,
   orderBy,
   onSnapshot,
   addDoc,
   Timestamp,
-  QuerySnapshot,
   setDoc,
   doc,
   updateDoc
@@ -22,7 +18,6 @@ import {
   ref,
   getDownloadURL,
   uploadBytes,
-  deleteObject
 } from "firebase/storage";
 import Messages from "./Messages";
 import { usePageVisibility } from "react-page-visibility";
@@ -32,7 +27,6 @@ export default function SelectedUser({user2state}) {
   const { user } = useContext(AuthContext);
   const user1id = user.uid;
   console.log(user1id);
-  // let location = useLocation();
   const user2 = user2state;
   var isVisible = usePageVisibility();
 

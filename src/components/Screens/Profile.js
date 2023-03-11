@@ -2,9 +2,6 @@ export default function Profile() {
   return (
     <section>
       <div>
-        {/* <div>
-        //Image Div
-      </div> */}
 
         <div>
           <svg

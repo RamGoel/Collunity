@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 
-export default function Messages({ msg, user1id, user2 }) {
+export default function Messages({ msg, user1id }) {
   const scrollRef = useRef();
 
   useEffect(() => {

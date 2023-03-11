@@ -1,12 +1,10 @@
 import { useState, useEffect, useContext } from "react";
-import { Link, useLocation } from "react-router-dom";
 import { auth, db } from "../../configs/firebase";
 import { useHistory } from "react-router-dom";
 import { signOut } from "firebase/auth";
 import { updateDoc, doc } from "firebase/firestore";
 import { AuthContext } from "../../configs/auth";
 import { collection, query, where, onSnapshot } from "firebase/firestore";
-import { usePageVisibility } from "react-page-visibility";
 import SelectedUser from "./SelectedUser";
 import UserCard from "./UserCard";
 
