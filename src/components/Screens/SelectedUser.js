@@ -1,9 +1,8 @@
 import { useRef, useState, useContext, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { auth, db, storage } from "../src/firebase";
-import FileUpload from "./FileUpload";
-import { AuthContext } from "./auth";
-import "./SelectedUser.css";
+import { auth, db, storage } from "../../configs/firebase";
+import FileUpload from "../utils/FileUpload";
+import { AuthContext } from "../../configs/auth";
 import SendIcon from "@mui/icons-material/Send";
 import UploadIcon from "@mui/icons-material/Upload";
 import {
